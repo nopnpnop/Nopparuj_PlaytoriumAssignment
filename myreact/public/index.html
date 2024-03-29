@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Price</title>
+<link rel="stylesheet" type="text/css" href="src\index.css">
+</head>
+<body>
+    <div class="container">
+      <h1>Product Price</h1>
+      <form id="productForm">
+        <p>Clothing:</p>
+        <input type="checkbox" id="clothing1" name="clothing" value="100" onchange="calculateTotal()"> <label for="clothing1">T-shirt - 100 บาท</label><br>
+        <input type="checkbox" id="clothing2" name="clothing" value="200" onchange="calculateTotal()"> <label for="clothing2">Jeans - 200 บาท</label><br>
+        <input type="checkbox" id="clothing3" name="clothing" value="150" onchange="calculateTotal()"> <label for="clothing3">Dress - 150 บาท</label><br>
+        <input type="checkbox" id="clothing4" name="clothing" value="250" onchange="calculateTotal()"> <label for="clothing4">Jacket - 250 บาท</label><br>
+        <input type="checkbox" id="clothing5" name="clothing" value="300" onchange="calculateTotal()"> <label for="clothing5">Skirt - 300 บาท</label><br>
+        <input type="checkbox" id="clothing6" name="clothing" value="150" onchange="calculateTotal()"> <label for="clothing6">Shorts - 150 บาท</label><br>
+        <input type="checkbox" id="clothing7" name="clothing" value="200" onchange="calculateTotal()"> <label for="clothing7">Sweater - 200 บาท</label><br>
+        <input type="checkbox" id="clothing8" name="clothing" value="350" onchange="calculateTotal()"> <label for="clothing8">Coat - 350 บาท</label><br>
+        <input type="checkbox" id="clothing9" name="clothing" value="100" onchange="calculateTotal()"> <label for="clothing9">Polo shirt - 100 บาท</label><br>
+        <input type="checkbox" id="clothing10" name="clothing" value="150" onchange="calculateTotal()"> <label for="clothing10">Socks - 150 บาท</label><br>
+        <p>Accessory:</p>
+        <input type="checkbox" id="accessory1" name="accessory" value="50" onchange="calculateTotal()"> <label for="accessory1">Sunglasses - 50 บาท</label><br>
+        <input type="checkbox" id="accessory2" name="accessory" value="150" onchange="calculateTotal()"> <label for="accessory2">Watch - 150 บาท</label><br>
+        <input type="checkbox" id="accessory3" name="accessory" value="80" onchange="calculateTotal()"> <label for="accessory3">Bracelet - 80 บาท</label><br>
+        <input type="checkbox" id="accessory4" name="accessory" value="120" onchange="calculateTotal()"> <label for="accessory4">Necklace - 120 บาท</label><br>
+        <input type="checkbox" id="accessory5" name="accessory" value="200" onchange="calculateTotal()"> <label for="accessory5">Handbag - 200 บาท</label><br>
+        <input type="checkbox" id="accessory6" name="accessory" value="100" onchange="calculateTotal()"> <label for="accessory6">Wallet - 100 บาท</label><br>
+        <input type="checkbox" id="accessory7" name="accessory" value="80" onchange="calculateTotal()"> <label for="accessory7">Hairband - 80 บาท</label><br>
+        <input type="checkbox" id="accessory8" name="accessory" value="120" onchange="calculateTotal()"> <label for="accessory8">Earrings - 120 บาท</label><br>
+        <p>Electronics:</p>
+        <input type="checkbox" id="electronics1" name="electronics" value="300" onchange="calculateTotal()"> <label for="electronics1">Smartphone - 300 บาท</label><br>
+        <input type="checkbox" id="electronics2" name="electronics" value="400" onchange="calculateTotal()"> <label for="electronics2">Headphones - 400 บาท</label><br>
+        <input type="checkbox" id="electronics3" name="electronics" value="350" onchange="calculateTotal()"> <label for="electronics3">Laptop - 350 บาท</label><br>
+        <input type="checkbox" id="electronics4" name="electronics" value="200" onchange="calculateTotal()"> <label for="electronics4">Charger - 200 บาท</label><br>
+        <input type="checkbox" id="electronics5" name="electronics" value="150" onchange="calculateTotal()"> <label for="electronics5">Mouse - 150 บาท</label><br>
+        <input type="checkbox" id="electronics6" name="electronics" value="250" onchange="calculateTotal()"> <label for="electronics6">Keyboard - 250 บาท</label><br>
+        <input type="checkbox" id="electronics7" name="electronics" value="200" onchange="calculateTotal()"> <label for="electronics7">Mouse Pen - 250 บาท</label><br>
+        <br>
+        <label for="discountCode">Enter discount code:</label>
+        <input type="text" id="discountCode" name="discountCode">
+        <button type="button" onclick="applyDiscount()">Apply Discount</button>
+        <button type="button" onclick="cancelDiscount()">ยกเลิกการใช้ส่วนลด</button>
+        <p id="discountInfo"></p>
+        <input type="checkbox" id="ElecDisCount" onchange="togglePointsAndButtons()"> <label>ส่วนลดประเภทสิทค้าพิเศษ (Electronics)</label><br>
+        <label for="customerPoints">Enter customer points (max 1000 points):</label>
+        <input type="number" id="customerPoints" name="customerPoints" min="0" max="1000">
+        <button type="button" onclick="applyPointsDiscount()">ใช้ส่วนลดจากแต้ม</button>
+        <button type="button" onclick="cancelPointsDiscount()" disa>ยกเลิกการใช้แต้ม</button>
+      </form>
+      <p id="pointsDiscountInfo"></p>
+      <p id="SeasonDis"></p>
+      <button type="button" id="seasondis" onclick="applySeasonDiscount()" style="display: none;">ใช้ส่วนลดทันที!</button>
+      <p id="totalPrice">Total price: 0 บาท</p>
+    </div>
+    
+    <script>
+    var originalTotalPrice = 0; // เก็บราคารวมเดิม
+    var discountCodeUsed = ""; // เก็บรหัสโค้ดส่วนลดที่ใช้
+    var discountAmount = 0; // เก็บจำนวนเงินที่ลด
+    
+    function togglePointsAndButtons() {
+      var ElecDisCountCheckbox = document.getElementById('ElecDisCount');
+      var pointsInput = document.getElementById('customerPoints');
+      var applyPointsButton = document.querySelector('button[onclick="applyPointsDiscount()"]');
+      var cancelPointsButton = document.querySelector('button[onclick="cancelPointsDiscount()"]');
+      
+      if (ElecDisCountCheckbox.checked) {
+        pointsInput.disabled = true;
+        applyPointsButton.disabled = true;
+        cancelPointsButton.disabled = true;
+        
+        if (ElecDisCountCheckbox.checked) {
+          var electronicsCheckboxes = document.querySelectorAll('input[name="electronics"]:checked');
+          if (discountAmount > 0){
+            var totalPrice = originalTotalPrice - discountAmount;
+          }else {
+            var totalPrice = originalTotalPrice
+          }
+          
+    
+          electronicsCheckboxes.forEach(function(checkbox) {
+            var discountAmount = parseInt(checkbox.value) * 0.15;
+            totalPrice -= discountAmount;
+          });
+    
+          totalPrice = SeasonDiscount(totalPrice);
+          displayTotalPrice(totalPrice);
+        }
+      } else {
+        pointsInput.disabled = false;
+        applyPointsButton.disabled = false;
+        cancelPointsButton.disabled = false;
+        
+        applyDiscount();
+
+        if (document.getElementById('pointsDiscountInfo').textContent !== "") {
+          applyPointsDiscount();
+        }
+      }
+    }
+    function calculateTotal() {
+      var totalPrice = 0;
+      var form = document.getElementById('productForm');
+      var checkboxes = form.querySelectorAll('input[type="checkbox"]:checked');
+    
+      checkboxes.forEach(function(checkbox) {
+        totalPrice += parseInt(checkbox.value);
+      });
+    
+      originalTotalPrice = totalPrice;
+    
+      totalPrice = SeasonDiscount(totalPrice);
+      displayTotalPrice(totalPrice);
+    }
+    
+    function applyDiscount() {
+      var totalPrice = originalTotalPrice; // ใช้ราคารวมเดิม
+      var discountCode = document.getElementById('discountCode').value;
+      
+      if (discountCode === "DISCOUNT50") {
+        totalPrice -= 50; // ลด 50 บาท
+        discountCodeUsed = "DISCOUNT50";
+        discountAmount = 50;
+        document.getElementById('discountInfo').textContent = "Discount code used: " + discountCodeUsed + ", Discount amount: " + discountAmount.toFixed(2) + " บาท";
+      } else if (discountCode === "OFF10") {
+        var discount = originalTotalPrice * 0.1;
+        totalPrice -= discount; // ลด 10%
+        discountCodeUsed = "OFF10";
+        discountAmount = discount;
+        document.getElementById('discountInfo').textContent = "Discount code used: " + discountCodeUsed + ", Discount amount: " + discountAmount.toFixed(2) + " บาท";
+      }
+      // แสดงข้อมูลส่วนลด
+      // แสดงราคารวมหลังจากส่วนลด
+      totalPrice = SeasonDiscount(totalPrice);
+      displayTotalPrice(totalPrice);
+    }
+    
+    function applyPointsDiscount() {
+      var customerPoints = parseInt(document.getElementById('customerPoints').value);
+      var totalPrice = originalTotalPrice; // ใช้ราคารวมเดิม
+    
+      // หาราคาหลังลดราคาจากโค้ด
+      var discountedPrice = totalPrice;
+    
+      if (discountCodeUsed !== "") {
+        discountedPrice -= discountAmount;
+      }
+    
+      // ตรวจสอบและคำนวณการลดราคาจากแต้มลูกค้า
+      var pointDiscount = 0;
+      if (customerPoints > 0) {
+        var maxPointsDiscount = discountedPrice * 0.2; // 20% ของราคาหลังลดราคาจากโค้ด
+        if (customerPoints > maxPointsDiscount) {
+          document.getElementById('pointsDiscountInfo').textContent = "ไม่สามารถใช้แต้มเกิน 20% ของราคาได้";
+          return; // ออกจากฟังก์ชันเพื่อไม่ทำการลดราคา
+        } else {
+          pointDiscount = Math.min(customerPoints, discountedPrice); // หาค่าน้อยสุดระหว่างจำนวนแต้มและราคาหลังลดราคาจากโค้ด
+          discountedPrice -= pointDiscount; // ลดราคาตามจำนวนแต้มที่น้อยสุด
+        }
+      }
+    
+      // เรียกใช้ SeasonDiscount เพื่อคำนวณลดราคาฤดูกาล
+      totalPrice = SeasonDiscount(discountedPrice);
+    
+      // แสดงข้อมูลส่วนลดจากแต้ม
+      document.getElementById('pointsDiscountInfo').textContent = "Points discount: " + pointDiscount.toFixed(2) + " บาท";
+    
+      // แสดงราคารวมหลังจากส่วนลดทั้งหมด
+      displayTotalPrice(totalPrice);
+    }
+    
+    
+    function SeasonDiscount(totalPrice) {
+      // ตรวจสอบว่าราคารวมมีค่ามากกว่าหรือเท่ากับ 300 หรือไม่
+      if (totalPrice >= 300) {
+        // คำนวณจำนวนครั้งที่สามารถลดได้
+        var discountCount = Math.floor(totalPrice / 300);
+    
+        // คำนวณจำนวนเงินที่จะลด
+        var discountAmount = discountCount * 30;
+    
+        // คำนวณราคารวมหลังจากลดส่วนลดฤดูกาล
+        totalPrice -= discountAmount;
+    
+        // แสดงข้อความเพิ่มเติมใน Label ของ Season Discount
+        document.getElementById('SeasonDis').textContent = "พิเศษ! ทุก ๆ 300 บาท ลดทันที 30 บาท!!";
+      } else {
+        // ถ้าไม่มีการลดส่วนลดฤดูกาลให้เคลียร์ข้อความใน Label
+        document.getElementById('SeasonDis').textContent = "";
+        document.getElementById('seasondis').style.display = 'none';
+      }
+    
+      // คืนค่าราคารวมหลังจากลดส่วนลดฤดูกาลหรือไม่ก็ตาม
+      return totalPrice;
+    }
+    
+    function applySeasonDiscount() {
+        totalPrice = SeasonDiscount(discountedPrice);
+    // แสดงราคารวมหลังจากส่วนลดทั้งหมด
+        displayTotalPrice(totalPrice);
+    }
+    
+    
+    function cancelDiscount() {
+      // เรียกใช้ฟังก์ชันคำนวณราคารวมอีกครั้งเพื่อล้างส่วนลดทั้งหมด
+      discountAmount = 0;
+      calculateTotal();
+    
+    
+      // ล้างข้อมูลของส่วนลด
+      document.getElementById('discountInfo').textContent = "";
+    
+      // ล้างข้อมูลในช่องกรอกโค้ด
+      document.getElementById('discountCode').value = "";
+    }
+    
+    function cancelPointsDiscount() {
+      var totalPrice = originalTotalPrice; // เริ่มต้นที่ราคาหลังจากหักส่วนลดโค้ด
+    
+      // ถ้ามีโค้ดส่วนลดใช้งานอยู่ ให้ลดราคาตามโค้ดส่วนลด
+      if (discountCodeUsed !== "") {
+        totalPrice -= discountAmount;
+      }
+    
+      // ล้างช่องแต้มเป็น 0
+      document.getElementById('pointsDiscountInfo').textContent = "";
+      document.getElementById('customerPoints').value = 0;
+    
+      // แสดงราคารวมหลังจากยกเลิกการใช้แต้ม
+      totalPrice = SeasonDiscount(totalPrice);
+      displayTotalPrice(totalPrice);
+    }
+    
+    
+    function displayTotalPrice(totalPrice) {
+      // เรียกใช้ SeasonDiscount เพื่อตรวจสอบการลดราคาฤดูกาล
+      SeasonDiscount(totalPrice);
+    
+      // แสดงราคารวมหลังจากส่วนลด
+      document.getElementById('totalPrice').textContent = "Total price: " + totalPrice.toFixed(2) + " บาท";
+    }
+    
+    </script>
+    </body>
+    </html>
